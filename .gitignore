@@ -1,6 +1,8 @@
 node_modules/
 .next/
+.next-validation/
 out/
 .env
 .env.local
 *.pack.gz
+*.tsbuildinfo

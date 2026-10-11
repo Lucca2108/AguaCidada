@@ -194,3 +194,38 @@ Evite executar `npm audit fix --force` sem revisar as mudanças, pois ele pode a
 ## Licença
 
 Projeto desenvolvido para fins de MVP e Inovathon.
+
+## Segunda etapa — frontend integrado
+
+Implementados: `/relatar` (quatro etapas e sucesso), `/ocorrencias`, `/ocorrencias/[id]`, `/faturas`, `/faturas/[id]`, `/faturas/[id]/segunda-via` e `/perfil`.
+
+A Home mantém sua composição visual e usa `NearbyOccurrences` para refletir registros locais. O mapa mantém Leaflet/OpenStreetMap e agora conecta busca por bairro, localização, confirmação única por navegador e acompanhamento. A navegação inferior acompanha a rota atual.
+
+### Camada de dados
+
+- `occurrence-service.ts`: consulta, criação, protocolo, confirmação, listagem pessoal e atualização de status. Os mocks persistem em `localStorage` sob `agua-cidada:occurrences:v2`.
+- `invoice-service.ts`: listagem e detalhe com valores de demonstração.
+- `geo-service.ts`: GPS com erros recuperáveis. Não usa geocodificação externa; bairro, cidade e UF são confirmados pelo usuário.
+- `photo-service.ts`: aceita JPG/PNG/WebP até 10 MB e reduz a imagem para no máximo 1200 px para armazenamento local. Foto opcional, sem alegação de validação forense.
+- `api.ts`: concentra todas as chamadas HTTP. Copie `.env.example` se necessário. `NEXT_PUBLIC_API_URL` define a URL; `NEXT_PUBLIC_USE_API=false` mantém os mocks. Ative a API apenas depois de alinhar os contratos.
+
+A segunda via é uma página imprimível. O usuário pode escolher “Salvar como PDF” no diálogo do navegador. Os códigos são fictícios e não podem ser pagos.
+
+### Validação
+
+```sh
+node --test tests/services.test.cjs
+npx tsc --noEmit
+npm run build
+npm run dev
+```
+
+Os testes cobrem persistência após recarga, duplicação de confirmação, resolução/reabertura, armazenamento cheio, localização inválida, GPS negado/indisponível, validação inicial de fotos e consultas de fatura.
+
+Para separar artefatos de build de um servidor de desenvolvimento aberto, configure `NEXT_BUILD_DIR=.next-validation` tanto no build quanto no start. O padrão continua sendo `.next`.
+
+### Integrações futuras
+
+Os endpoints de ocorrências e faturas já têm pontos de integração nos services. Ainda é necessário alinhar autenticação/identificação do morador e o significado de `owned`, upload definitivo de fotos (atualmente data URL), paginação, histórico de status, geocodificação e geração oficial de segunda via. As etapas de análise e atendimento só devem ser concluídas quando vierem eventos reais da API. Nenhum backend foi implementado nesta etapa.
+
+Câmera e GPS devem ser conferidos em dispositivo físico, em HTTPS ou localhost. Abrir por IP de rede em HTTP pode impedir essas permissões. Os registros locais não são enviados à concessionária e não sincronizam entre dispositivos.

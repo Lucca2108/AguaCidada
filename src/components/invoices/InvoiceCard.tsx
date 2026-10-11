@@ -1,0 +1,4 @@
+import Link from 'next/link';
+import {Invoice} from '@/types/invoice';
+import {currency,invoiceDate} from '@/services/invoice-service';
+export function InvoiceCard({invoice}:{invoice:Invoice}) {return <article className="card"><div className="flex items-center justify-between gap-2"><h2 className="font-bold">{invoice.reference}</h2><span className={'rounded-full px-2 py-1 text-[10px] font-bold '+(invoice.status==='paid'?'bg-emerald-50 text-emerald-700':'bg-amber-50 text-amber-800')}>{invoice.status==='paid'?'PAGO':'EM ABERTO'}</span></div><p className="mt-4 text-2xl font-bold">{currency(invoice.amount)}</p><p className="mt-1 text-sm text-slate-500">Vencimento {invoiceDate(invoice.dueDate)}</p><div className="mt-5 flex gap-2"><Link className="primary" href={'/faturas/'+invoice.id}>Ver fatura</Link>{invoice.status==='open'&&<Link className="secondary w-full" href={'/faturas/'+invoice.id+'/segunda-via'}>Baixar 2ª via</Link>}</div></article>}

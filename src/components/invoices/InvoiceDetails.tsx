@@ -1,0 +1,13 @@
+'use client';
+import Link from 'next/link';
+import {useCallback,useState} from 'react';
+import {PageShell} from '@/components/layout/PageShell';
+import {ResourceState} from '@/components/ui/ResourceState';
+import {useResource} from '@/hooks/useResource';
+import {currency,invoiceDate,invoiceService} from '@/services/invoice-service';
+export function InvoiceDetails({id,print=false}:{id:string;print?:boolean}) {
+const loader=useCallback(()=>invoiceService.getInvoiceById(id),[id]),resource=useResource(loader),[message,setMessage]=useState('');
+const invoice=resource.data;
+async function copy(){try{await navigator.clipboard.writeText(invoice!.barcode);setMessage('Código fictício copiado. Não utilize para pagamento.')}catch{setMessage('Não foi possível copiar automaticamente. Selecione o código abaixo para copiá-lo.')} }
+return <PageShell title={print?'2ª via demonstrativa':'Detalhe da fatura'}><ResourceState {...resource}/>{!resource.loading&&!resource.error&&!invoice&&<p className="card">Fatura não encontrada.</p>}{invoice&&<><div className="rounded-xl bg-amber-50 p-4 text-sm font-semibold text-amber-800">DEMONSTRAÇÃO · SEM VALOR PARA PAGAMENTO</div><section className="card space-y-5"><h2 className="text-xl font-bold">{invoice.reference}</h2><p className="text-3xl font-bold">{currency(invoice.amount)}</p><dl className="grid grid-cols-2 gap-4 text-sm"><div><dt className="text-slate-500">Unidade consumidora</dt><dd>000123456</dd></div><div><dt className="text-slate-500">Vencimento</dt><dd>{invoiceDate(invoice.dueDate)}</dd></div><div><dt className="text-slate-500">Situação</dt><dd className="font-semibold">{invoice.status==='paid'?'PAGO':'EM ABERTO'}</dd></div><div><dt className="text-slate-500">Consumo</dt><dd>{invoice.consumption} m³</dd></div></dl><div><label htmlFor="barcode" className="text-xs font-semibold text-slate-500">Código de barras fictício</label><textarea id="barcode" readOnly value={invoice.barcode} className="field h-24 break-all font-mono text-sm"/></div></section>{print?<div className="no-print space-y-3"><p className="text-sm text-slate-500">Use “Salvar como PDF” na janela de impressão para baixar esta 2ª via demonstrativa.</p><button className="primary" onClick={()=>window.print()}>Imprimir / salvar como PDF</button></div>:<><button className="primary" onClick={copy}>Copiar código</button><Link className="secondary w-full" href={'/faturas/'+id+'/segunda-via'}>Visualizar 2ª via</Link>{message&&<p role="status" className="text-sm text-ocean">{message}</p>}</>}<Link className="secondary no-print w-full" href="/faturas">Voltar às faturas</Link></>}</PageShell>;
+}
