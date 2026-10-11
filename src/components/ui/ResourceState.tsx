@@ -1,0 +1,1 @@
+export function ResourceState({loading,error,retry}:{loading:boolean;error:string;retry:()=>void}) { return loading?<p role="status" className="card text-slate-500">Carregando…</p>:error?<div role="alert" className="card"><p>{error}</p><button className="secondary mt-3" onClick={retry}>Tentar novamente</button></div>:null; }

@@ -1,0 +1,5 @@
+import {Occurrence} from '@/types/occurrence';
+import {dateTime} from '@/utils/occurrence';
+export function OccurrenceSummary({item}:{item:Pick<Occurrence,'title'|'neighborhood'|'city'|'state'|'latitude'|'longitude'|'description'|'photoUrl'|'createdAt'>}) {
+return <div className="card space-y-4"><div><p className="text-xs font-semibold uppercase text-ocean">Tipo do problema</p><h2 className="mt-1 text-lg font-bold">{item.title}</h2></div><dl className="space-y-3 text-sm"><div><dt className="text-slate-500">Local</dt><dd>{item.neighborhood} · {item.city} - {item.state}</dd><dd className="text-xs text-slate-500">{item.latitude.toFixed(5)}, {item.longitude.toFixed(5)}</dd></div><div><dt className="text-slate-500">Data e horário</dt><dd>{dateTime(item.createdAt)}</dd></div><div><dt className="text-slate-500">Descrição</dt><dd className="whitespace-pre-wrap break-words">{item.description||'Sem descrição adicional.'}</dd></div></dl>{item.photoUrl?<img src={item.photoUrl} alt="Foto do problema relatado" className="max-h-72 w-full rounded-xl object-contain"/>:<p className="text-sm text-slate-500">Nenhuma foto adicionada.</p>}</div>;
+}
